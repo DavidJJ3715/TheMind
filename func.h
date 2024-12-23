@@ -39,8 +39,7 @@ const int WIDTH = 1200, HEIGHT = 800, frameDelay = 4;
 /********************************
 *       Draw Functions          *
 *********************************/
-void drawPause(SDL_Renderer* renderer, TTF_Font* font, bool selection)
-{
+void drawPause(SDL_Renderer* renderer, TTF_Font* font, bool selection) {
     SDL_SetRenderDrawColor(renderer,255,255,255,0); //Draw white background
     SDL_RenderClear(renderer);
 
@@ -69,14 +68,15 @@ void drawPause(SDL_Renderer* renderer, TTF_Font* font, bool selection)
     SDL_RenderCopy(renderer, resumeText, nullptr, &resume); //Render "RESUME" to the screen
     SDL_RenderCopy(renderer, quitText, nullptr, &quit); //Render "QUIT" to the screen
 
-    if(selection) //Change where border is located based on which choice is selected
-        {heightVal = (HEIGHT/2)-50;} //Resume
-    else
-        {heightVal = (HEIGHT/2)+100;} //Quit
+    if(selection) { //Change where border is located based on which choice is selected
+        heightVal = (HEIGHT/2)-50;
+    } //Resume
+    else {
+        heightVal = (HEIGHT/2)+100;
+    } //Quit
 
     SDL_SetRenderDrawColor(renderer,212,175,55,0); //Gold color for border
-    for(int i=0; i<5; i++)
-    {
+    for(int i=0; i<5; i++) {
         border = {widthVal+i, heightVal+i, 300-2*i, 100-2*i};
         SDL_RenderDrawRect(renderer, &border); //Draw the golden rectangle
     }
@@ -90,37 +90,34 @@ void drawPause(SDL_Renderer* renderer, TTF_Font* font, bool selection)
 /********************************
 *       Screen Functions        *
 *********************************/
-bool selectionMenu(SDL_Renderer* renderer, TTF_Font* font, std::function<void(SDL_Renderer*,TTF_Font*,bool)>func)
-{ //Generic two prompt selection menu that takes in a draw function as a parameter
+bool selectionMenu(SDL_Renderer* renderer, TTF_Font* font, std::function<void(SDL_Renderer*,TTF_Font*,bool)>func) {
+    //Generic two prompt selection menu that takes in a draw function as a parameter
     bool selection = true; //True == "resume" || False == "quit"
     func(renderer, font, selection);
-    while(true)
-    {
+    while(true) {
         SDL_Event event;
-        while(SDL_PollEvent(&event)) //Typical event handler loop
-        {
-            switch(event.type)
-            {
-                case SDL_MOUSEBUTTONDOWN:
-                    {return selection;}
-                case SDL_QUIT:
-                    {return selection;}
-                case SDL_KEYDOWN:
-                {
-                    switch(event.key.keysym.sym)
-                    {
-                        case SDLK_ESCAPE:
-                            {return true;}
-                        case SDLK_RETURN:
-                            {return selection;}
-                        case SDLK_UP: //User selects "RESUME"
-                        {
+        while(SDL_PollEvent(&event)) { //Typical event handler loop
+            switch(event.type) {
+                case SDL_MOUSEBUTTONDOWN: {
+                    return selection;
+                }
+                case SDL_QUIT: {
+                    return selection;
+                }
+                case SDL_KEYDOWN: {
+                    switch(event.key.keysym.sym) {
+                        case SDLK_ESCAPE: {
+                            return true;
+                        }
+                        case SDLK_RETURN: {
+                            return selection;
+                        }
+                        case SDLK_UP: { //User selects "RESUME"
                             selection = true; 
                             func(renderer, font, selection); //Only call the draw function whenever there is a change to be made to the screen   
                             break;
                         }
-                        case SDLK_DOWN: //User selects "QUIT"
-                        {
+                        case SDLK_DOWN: { //User selects "QUIT"
                             selection = false; 
                             func(renderer, font, selection);    
                             break;
@@ -128,16 +125,16 @@ bool selectionMenu(SDL_Renderer* renderer, TTF_Font* font, std::function<void(SD
                     }
                     break;
                 }
-                case SDL_MOUSEMOTION:
-                {
+                case SDL_MOUSEMOTION: {
                     int xPos = event.motion.x;
                     int yPos = event.motion.y;
-                    if(xPos > (WIDTH/2)-100 && xPos < (WIDTH/2)+100)
-                    {
-                        if(yPos > (HEIGHT/2)-50 && yPos < (HEIGHT/2)+50)
-                            {selection = true;}
-                        else if(yPos > (HEIGHT/2)+100 && yPos < (HEIGHT/2)+200)
-                            {selection = false;}
+                    if(xPos > (WIDTH/2)-100 && xPos < (WIDTH/2)+100) {
+                        if(yPos > (HEIGHT/2)-50 && yPos < (HEIGHT/2)+50) {
+                            selection = true;
+                        }
+                        else if(yPos > (HEIGHT/2)+100 && yPos < (HEIGHT/2)+200) {
+                            selection = false;
+                        }
                         func(renderer, font, selection);
                     }
                     break;

@@ -39,6 +39,12 @@ const int WIDTH = 1200, HEIGHT = 800, frameDelay = 4;
 /********************************
 *       Draw Functions          *
 *********************************/
+void drawMain(SDL_Renderer* renderer, TTF_Font* font, bool selection) {
+    SDL_SetRenderDrawColor(renderer,255,255,255,0); //White
+    SDL_RenderClear(renderer);
+    //! Main menu where the options are 1. Host 2. Join
+}
+
 void drawPause(SDL_Renderer* renderer, TTF_Font* font, bool selection) {
     SDL_SetRenderDrawColor(renderer,255,255,255,0); //Draw white background
     SDL_RenderClear(renderer);

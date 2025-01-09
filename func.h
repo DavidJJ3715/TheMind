@@ -39,10 +39,8 @@ const int WIDTH = 1200, HEIGHT = 800, frameDelay = 4;
 /********************************
 *       Draw Functions          *
 *********************************/
-void drawMain(SDL_Renderer* renderer, TTF_Font* font, bool selection) {
-    SDL_SetRenderDrawColor(renderer,255,255,255,0); //White
-    SDL_RenderClear(renderer);
-    //! Main menu where the options are 1. Host 2. Join
+void drawHome(SDL_Renderer* renderer, TTF_Font* font, bool selection) {
+
 }
 
 void drawPause(SDL_Renderer* renderer, TTF_Font* font, bool selection) {
@@ -96,7 +94,7 @@ void drawPause(SDL_Renderer* renderer, TTF_Font* font, bool selection) {
 /********************************
 *       Screen Functions        *
 *********************************/
-bool selectionMenu(SDL_Renderer* renderer, TTF_Font* font, std::function<void(SDL_Renderer*,TTF_Font*,bool)>func) {
+bool boolMenu(SDL_Renderer* renderer, TTF_Font* font, std::function<void(SDL_Renderer*,TTF_Font*,bool)>func) {
     //Generic two prompt selection menu that takes in a draw function as a parameter
     bool selection = true; //True == "resume" || False == "quit"
     func(renderer, font, selection);
@@ -148,6 +146,69 @@ bool selectionMenu(SDL_Renderer* renderer, TTF_Font* font, std::function<void(SD
             }
         }
     }
+    return selection;
+}
+
+bool triMenu(SDL_Renderer* renderer, TTF_Font* font, std::function<void(SDL_Renderer*,TTF_Font*,int)>func) {
+    int selection = 1;
+    func(renderer, font, selection);
+    while(true) {
+        SDL_Event event;
+        while(SDL_PollEvent(&event)) {
+            switch(event.type) {
+                case SDL_MOUSEBUTTONDOWN: {
+                    return selection;
+                }
+                case SDL_QUIT: {
+                    return selection;
+                }
+                case SDL_KEYDOWN: {
+                    case SDLK_ESCAPE: {
+                        return 1;
+                    }
+                    case SDLK_RETURN: {
+                        return selection;
+                    }
+                    case SDLK_UP: {
+                        if(selection == 1) {
+                            selection = 3;
+                        }
+                        else {
+                            selection -= 1;
+                        }
+                        func(renderer, font, selection);
+                        break;
+                    }
+                    case SDLK_DOWN: {
+                        if(selection == 3) {
+                            selection = 1;
+                        }
+                        else {
+                            selection += 1;
+                        }
+                        func(renderer, font, selection);
+                        break;
+                    }
+                    break;
+                }
+                case SDL_MOUSEMOTION: {
+                    int xPos = event.motion.x;
+                    int yPos = event.motion.y;
+                    if(xPos > (WIDTH/2)-100 && xPos < (WIDTH/2)+100) {
+                        if(yPos > (HEIGHT/2)-50 && yPos < (HEIGHT/2)+50) {
+                            selection = true;
+                        }
+                        else if(yPos > (HEIGHT/2)+100 && yPos < (HEIGHT/2)+200) {
+                            selection = false;
+                        }
+                        func(renderer, font, selection);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
     return selection;
 }
 

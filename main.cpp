@@ -9,28 +9,35 @@ int main() {
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     TTF_Font* font = TTF_OpenFont("DejaVuSans.ttf", 75);
 
-    int frameTime = 0;
+    int frameTime = 0, selection = -1;
     Uint64 frameStart = 0;
-    bool running = true;
+    bool running = true, beginning = true;
 
     while(running) {
         frameStart = SDL_GetTicks64();
-        SDL_Event event;
-        while(SDL_PollEvent(&event)) {
-            switch(event.type) {
-                case SDL_QUIT: {
-                    running = false;
-                    break;
-                }
-                case SDL_KEYDOWN: {
-                    if(event.key.keysym.sym == SDLK_ESCAPE) {
-                        running = selectionMenu(renderer, font, drawPause);
-                    }
-                    break;
-                }
-            }
+        if(beginning) {
+            selection = triMenu(renderer, font, drawHome);
+            beginning = false;
         }
-        
+        switch(selection) {
+
+        }
+        // SDL_Event event;
+        // while(SDL_PollEvent(&event)) {
+        //     switch(event.type) {
+        //         case SDL_QUIT: {
+        //             running = false;
+        //             break;
+        //         }
+        //         case SDL_KEYDOWN: {
+        //             if(event.key.keysym.sym == SDLK_ESCAPE) {
+        //                 running = selectionMenu(renderer, font, drawPause);
+        //             }
+        //             break;
+        //         }
+        //     }
+        // }
+
         SDL_SetRenderDrawColor(renderer,0,0,0,0);
         SDL_RenderClear(renderer);
         SDL_RenderPresent(renderer);

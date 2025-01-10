@@ -19,24 +19,23 @@ int main() {
             selection = triMenu(renderer, font, drawHome);
             beginning = false;
         }
-        switch(selection) {
-
+        else {
+            switch(selection) {
+                case 1: { //HOST
+                    std::cout << "HOST" << std::endl;
+                    beginning = true;
+                    break;
+                }
+                case 2: { //JOIN
+                    std::cout << "JOIN" << std::endl;
+                    beginning = true;
+                    break;
+                }
+                case 3: { //QUIT
+                    running = false;
+                }
+            }
         }
-        // SDL_Event event;
-        // while(SDL_PollEvent(&event)) {
-        //     switch(event.type) {
-        //         case SDL_QUIT: {
-        //             running = false;
-        //             break;
-        //         }
-        //         case SDL_KEYDOWN: {
-        //             if(event.key.keysym.sym == SDLK_ESCAPE) {
-        //                 running = selectionMenu(renderer, font, drawPause);
-        //             }
-        //             break;
-        //         }
-        //     }
-        // }
 
         SDL_SetRenderDrawColor(renderer,0,0,0,0);
         SDL_RenderClear(renderer);

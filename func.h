@@ -39,8 +39,65 @@ const int WIDTH = 1200, HEIGHT = 800, frameDelay = 4;
 /********************************
 *       Draw Functions          *
 *********************************/
-void drawHome(SDL_Renderer* renderer, TTF_Font* font, bool selection) {
+void drawHome(SDL_Renderer* renderer, TTF_Font* font, int selection) {
+    SDL_SetRenderDrawColor(renderer,255,255,255,0); //Draw white background
+    SDL_RenderClear(renderer);
 
+    int menuWidth = (WIDTH/2), menuHeight = 3*(HEIGHT/4); //Bounds of the black box
+    int menuX = (WIDTH - menuWidth)/2, menuY = (HEIGHT - menuHeight)/2; //Starting points of the black box
+    int widthVal = (WIDTH/2)-145, heightVal = -1;
+    SDL_Rect rect = {menuX, menuY, menuWidth, menuHeight}, border; //Black rectangle rect
+
+    SDL_SetRenderDrawColor(renderer,0,0,0,0); //Choose black color
+    SDL_RenderFillRect(renderer, &rect); //Fill in black rectangle
+
+    SDL_Surface* surface = TTF_RenderText_Solid(font, "THE MIND", {255,255,255,0}); //Game pause text
+    SDL_Texture* titleText = SDL_CreateTextureFromSurface(renderer, surface); //Make it a texture
+    SDL_FreeSurface(surface); //Free the surface to prevent memory leaks
+    surface = TTF_RenderText_Solid(font, "HOST", {255,255,255,0}); //Server text
+    SDL_Texture* hostText = SDL_CreateTextureFromSurface(renderer, surface); //Make it a texture
+    SDL_FreeSurface(surface); 
+    surface = TTF_RenderText_Solid(font, "JOIN", {255,255,255,0}); //Client text
+    SDL_Texture* joinText = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_FreeSurface(surface); 
+    surface = TTF_RenderText_Solid(font, "QUIT", {255,255,255,0}); //Quit text
+    SDL_Texture* quitText = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_FreeSurface(surface); 
+
+    SDL_Rect title = {(WIDTH/2)-200, (HEIGHT/2)-(menuHeight/2)+25, 400, 140}; //Location of "THE MIND"
+    SDL_Rect host = {(WIDTH/2)-100, (HEIGHT/2)-125, 200, 100}; //Location of "HOST"
+    SDL_Rect join = {(WIDTH/2)-100, (HEIGHT/2)+25, 200, 100}; //Location of "JOIN"
+    SDL_Rect quit = {(WIDTH/2)-100, (HEIGHT/2)+175, 200, 100}; //Location of "QUIT"
+    SDL_RenderCopy(renderer, titleText, nullptr, &title); //Render "GAME PAUSED" to the screen
+    SDL_RenderCopy(renderer, hostText, nullptr, &host); //Render "RESUME" to the screen
+    SDL_RenderCopy(renderer, joinText, nullptr, &join);
+    SDL_RenderCopy(renderer, quitText, nullptr, &quit); //Render "QUIT" to the screen
+
+    switch(selection) { //Change where border is located based on which choice is selected
+        case 1: { //HOST
+            heightVal = (HEIGHT/2)-125;
+            break;
+        }
+        case 2: { //JOIN
+            heightVal = (HEIGHT/2)+30;
+            break;
+        }
+        case 3: { //QUIT
+            heightVal = (HEIGHT/2)+175;
+        }
+    }
+
+    SDL_SetRenderDrawColor(renderer,212,175,55,0); //Gold color for border
+    for(int i=0; i<5; i++) {
+        border = {widthVal+i, heightVal+i, 300-2*i, 100-2*i};
+        SDL_RenderDrawRect(renderer, &border); //Draw the golden rectangle
+    }
+
+    SDL_RenderPresent(renderer); //Draw everything to the screen
+    SDL_DestroyTexture(titleText); //Destroy every texture to prevent memory leaks
+    SDL_DestroyTexture(hostText);
+    SDL_DestroyTexture(joinText);
+    SDL_DestroyTexture(quitText);
 }
 
 void drawPause(SDL_Renderer* renderer, TTF_Font* font, bool selection) {
@@ -149,7 +206,7 @@ bool boolMenu(SDL_Renderer* renderer, TTF_Font* font, std::function<void(SDL_Ren
     return selection;
 }
 
-bool triMenu(SDL_Renderer* renderer, TTF_Font* font, std::function<void(SDL_Renderer*,TTF_Font*,int)>func) {
+int triMenu(SDL_Renderer* renderer, TTF_Font* font, std::function<void(SDL_Renderer*,TTF_Font*,int)>func) {
     int selection = 1;
     func(renderer, font, selection);
     while(true) {
@@ -163,31 +220,33 @@ bool triMenu(SDL_Renderer* renderer, TTF_Font* font, std::function<void(SDL_Rend
                     return selection;
                 }
                 case SDL_KEYDOWN: {
-                    case SDLK_ESCAPE: {
-                        return 1;
-                    }
-                    case SDLK_RETURN: {
-                        return selection;
-                    }
-                    case SDLK_UP: {
-                        if(selection == 1) {
-                            selection = 3;
+                    switch(event.key.keysym.sym) {
+                        case SDLK_ESCAPE: {
+                            return 3;
                         }
-                        else {
-                            selection -= 1;
+                        case SDLK_RETURN: {
+                            return selection;
                         }
-                        func(renderer, font, selection);
-                        break;
-                    }
-                    case SDLK_DOWN: {
-                        if(selection == 3) {
-                            selection = 1;
+                        case SDLK_UP: {
+                            if(selection == 1) {
+                                selection = 3;
+                            }
+                            else {
+                                selection -= 1;
+                            }
+                            func(renderer, font, selection);
+                            break;
                         }
-                        else {
-                            selection += 1;
+                        case SDLK_DOWN: {
+                            if(selection == 3) {
+                                selection = 1;
+                            }
+                            else {
+                                selection += 1;
+                            }
+                            func(renderer, font, selection);
+                            break;
                         }
-                        func(renderer, font, selection);
-                        break;
                     }
                     break;
                 }
@@ -195,11 +254,14 @@ bool triMenu(SDL_Renderer* renderer, TTF_Font* font, std::function<void(SDL_Rend
                     int xPos = event.motion.x;
                     int yPos = event.motion.y;
                     if(xPos > (WIDTH/2)-100 && xPos < (WIDTH/2)+100) {
-                        if(yPos > (HEIGHT/2)-50 && yPos < (HEIGHT/2)+50) {
-                            selection = true;
+                        if(yPos > (HEIGHT/2)-125 && yPos < (HEIGHT/2)-25) {
+                            selection = 1;
                         }
-                        else if(yPos > (HEIGHT/2)+100 && yPos < (HEIGHT/2)+200) {
-                            selection = false;
+                        else if(yPos > (HEIGHT/2)+30 && yPos < (HEIGHT/2)+130) {
+                            selection = 2;
+                        }
+                        else if(yPos > (HEIGHT/2)+175 && yPos < (HEIGHT/2)+275) {
+                            selection = 3;
                         }
                         func(renderer, font, selection);
                     }

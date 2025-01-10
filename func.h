@@ -9,6 +9,7 @@
 #include <fstream>
 #include <functional>
 #include <iostream>
+#include <map>
 #include <memory>
 #include <mutex>
 #include <optional>
@@ -40,16 +41,9 @@ const int WIDTH = 1200, HEIGHT = 800, frameDelay = 4;
 *       Draw Functions          *
 *********************************/
 void drawHome(SDL_Renderer* renderer, TTF_Font* font, int selection) {
-    SDL_SetRenderDrawColor(renderer,255,255,255,0); //Draw white background
-    SDL_RenderClear(renderer);
-
-    int menuWidth = (WIDTH/2), menuHeight = 3*(HEIGHT/4); //Bounds of the black box
-    int menuX = (WIDTH - menuWidth)/2, menuY = (HEIGHT - menuHeight)/2; //Starting points of the black box
+    int menuWidth = (WIDTH/2), menuHeight = 3*(HEIGHT/4); //Bounds of the text box
     int widthVal = (WIDTH/2)-145, heightVal = -1;
-    SDL_Rect rect = {menuX, menuY, menuWidth, menuHeight}, border; //Black rectangle rect
-
-    SDL_SetRenderDrawColor(renderer,0,0,0,0); //Choose black color
-    SDL_RenderFillRect(renderer, &rect); //Fill in black rectangle
+    SDL_Rect border;
 
     SDL_Surface* surface = TTF_RenderText_Solid(font, "THE MIND", {255,255,255,0}); //Game pause text
     SDL_Texture* titleText = SDL_CreateTextureFromSurface(renderer, surface); //Make it a texture
@@ -206,10 +200,12 @@ bool boolMenu(SDL_Renderer* renderer, TTF_Font* font, std::function<void(SDL_Ren
     return selection;
 }
 
-int triMenu(SDL_Renderer* renderer, TTF_Font* font, std::function<void(SDL_Renderer*,TTF_Font*,int)>func) {
-    int selection = 1;
-    func(renderer, font, selection);
+template<typename starLL>
+int triMenu(SDL_Renderer* renderer, TTF_Font* font, std::function<void(SDL_Renderer*,TTF_Font*,int)>func, starLL starList) {
+    Uint64 frameStart = 0;
+    int selection = 1, frameTime = 0;
     while(true) {
+        frameStart = SDL_GetTicks64();
         SDL_Event event;
         while(SDL_PollEvent(&event)) {
             switch(event.type) {
@@ -221,9 +217,6 @@ int triMenu(SDL_Renderer* renderer, TTF_Font* font, std::function<void(SDL_Rende
                 }
                 case SDL_KEYDOWN: {
                     switch(event.key.keysym.sym) {
-                        case SDLK_ESCAPE: {
-                            return 3;
-                        }
                         case SDLK_RETURN: {
                             return selection;
                         }
@@ -234,7 +227,6 @@ int triMenu(SDL_Renderer* renderer, TTF_Font* font, std::function<void(SDL_Rende
                             else {
                                 selection -= 1;
                             }
-                            func(renderer, font, selection);
                             break;
                         }
                         case SDLK_DOWN: {
@@ -244,7 +236,6 @@ int triMenu(SDL_Renderer* renderer, TTF_Font* font, std::function<void(SDL_Rende
                             else {
                                 selection += 1;
                             }
-                            func(renderer, font, selection);
                             break;
                         }
                     }
@@ -263,11 +254,19 @@ int triMenu(SDL_Renderer* renderer, TTF_Font* font, std::function<void(SDL_Rende
                         else if(yPos > (HEIGHT/2)+175 && yPos < (HEIGHT/2)+275) {
                             selection = 3;
                         }
-                        func(renderer, font, selection);
                     }
                     break;
                 }
             }
+        }
+        SDL_SetRenderDrawColor(renderer,0,0,0,0);
+        SDL_RenderClear(renderer);
+        starList.draw(renderer);
+        func(renderer, font, selection);
+        SDL_RenderPresent(renderer);
+        frameTime = SDL_GetTicks64() - frameStart;
+        if(frameDelay > frameTime) {
+            SDL_Delay(frameDelay - frameTime);
         }
     }
 

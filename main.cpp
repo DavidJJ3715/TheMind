@@ -1,4 +1,5 @@
 #include "func.h"
+#include "star.h"
 
 int main() {
     SDL_Init(SDL_INIT_EVERYTHING);
@@ -9,6 +10,7 @@ int main() {
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     TTF_Font* font = TTF_OpenFont("DejaVuSans.ttf", 75);
 
+    starLinkedList starList;
     int frameTime = 0, selection = -1;
     Uint64 frameStart = 0;
     bool running = true, beginning = true;
@@ -16,7 +18,7 @@ int main() {
     while(running) {
         frameStart = SDL_GetTicks64();
         if(beginning) {
-            selection = triMenu(renderer, font, drawHome);
+            selection = triMenu(renderer, font, drawHome, starList);
             beginning = false;
         }
         else {

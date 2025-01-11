@@ -18,7 +18,7 @@ int main() {
     while(running) {
         frameStart = SDL_GetTicks64();
         if(beginning) {
-            selection = triMenu(renderer, font, drawHome, starList);
+            selection = startMenu(renderer, font, starList);
             beginning = false;
         }
         else {

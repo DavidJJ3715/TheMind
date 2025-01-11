@@ -41,7 +41,7 @@ const int WIDTH = 1200, HEIGHT = 800, frameDelay = 4;
 *       Draw Functions          *
 *********************************/
 void drawHome(SDL_Renderer* renderer, TTF_Font* font, int selection) {
-    int menuWidth = (WIDTH/2), menuHeight = 3*(HEIGHT/4); //Bounds of the text box
+    int menuHeight = 3*(HEIGHT/4); //Bounds of the text box
     int widthVal = (WIDTH/2)-145, heightVal = -1;
     SDL_Rect border;
 
@@ -201,7 +201,7 @@ bool boolMenu(SDL_Renderer* renderer, TTF_Font* font, std::function<void(SDL_Ren
 }
 
 template<typename starLL>
-int triMenu(SDL_Renderer* renderer, TTF_Font* font, std::function<void(SDL_Renderer*,TTF_Font*,int)>func, starLL starList) {
+int startMenu(SDL_Renderer* renderer, TTF_Font* font, starLL starList) {
     Uint64 frameStart = 0;
     int selection = 1, frameTime = 0;
     while(true) {
@@ -262,7 +262,7 @@ int triMenu(SDL_Renderer* renderer, TTF_Font* font, std::function<void(SDL_Rende
         SDL_SetRenderDrawColor(renderer,0,0,0,0);
         SDL_RenderClear(renderer);
         starList.draw(renderer);
-        func(renderer, font, selection);
+        drawHome(renderer, font, selection);
         SDL_RenderPresent(renderer);
         frameTime = SDL_GetTicks64() - frameStart;
         if(frameDelay > frameTime) {
